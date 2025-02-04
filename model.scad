@@ -2,12 +2,12 @@ include <BOSL2/std.scad>
 include <BOSL2/transforms.scad>
 
 /* [Container Size] */
-card_x= 55; // [50:60]
+card_x= 54; // [50:60]
 card_y = 86; // [80:90]
 card_z = 2;  // [1.1:0.1:2.0]
 
 
-padding = 10;
+padding = 5;
 thickness = 5; // [5:10]
 overhang = 4; // [2:6]
 
@@ -33,8 +33,8 @@ wall_thickness = 3;
 inner_wall_height = thickness - (plate_thickness * 2);
 
 
-case_x = card_x + padding;
-case_y = card_y + padding;
+case_x = card_x + (padding * 2);
+case_y = card_y + (padding * 2);
 case_z = plate_thickness;
 
 echo (str(""));
@@ -72,8 +72,8 @@ module front_plate() {
       difference() {
 
         // walls
-        rect_tube(size=[case_x, case_y], wall=(padding / 2) + (overhang / 2), h=inner_wall_height, rounding=rounding);
-        rect_tube(size=[case_x - wall_thickness, case_y - wall_thickness], wall=(padding / 2) + (overhang / 2) - (wall_thickness), h=100);
+        rect_tube(size=[case_x, case_y], wall=padding + (overhang / 2), h=inner_wall_height, rounding=rounding);
+        rect_tube(size=[case_x - wall_thickness, case_y - wall_thickness], wall=padding + (overhang / 2) - (wall_thickness), h=100);
         
         // Make space for the card to fit.
         up(inner_wall_height + plate_thickness - card_z)
