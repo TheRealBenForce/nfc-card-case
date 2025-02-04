@@ -17,7 +17,7 @@ overhang = 4; // [2:6]
 
 /* [Tolerances] */
 // Smoothness of curved surfaces in preview mode
-preview_smoothness = 32; // [8:128]
+preview_smoothness = 16; // [8:128]
 
 // Smoothness of curved surfaces in render mode
 render_smoothness = 64; // [8:128]
