@@ -35,11 +35,13 @@ inner_wall_height = thickness - (plate_thickness * 2);
 
 case_x = card_x + (padding * 2);
 case_y = card_y + (padding * 2);
-case_z = plate_thickness;
+case_z = (plate_thickness * 2 + inner_wall_height);
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
-echo (str("Total Thickness: ", inner_wall_height + plate_thickness + plate_thickness));
+echo (str("Total Width: ", case_x));
+echo (str("Total Height: ", case_y));
+echo (str("Total Thickness: ", case_z));
 
 
 module card() {
