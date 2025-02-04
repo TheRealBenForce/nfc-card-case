@@ -6,9 +6,13 @@ card_x= 54; // [50:60]
 card_y = 86; // [80:90]
 card_z = 2;  // [1.1:0.1:2.0]
 
-
-padding = 5;
+// Total thickness of the case
 thickness = 5; // [5:10]
+
+// How much space will be between the card and the case.
+padding = 5; // [5:10]
+
+// How much of the NFC card face will be covered.
 overhang = 4; // [2:6]
 
 /* [Tolerances] */
