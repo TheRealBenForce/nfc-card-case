@@ -157,24 +157,24 @@ module latch(zrot=0) {
 module latches(zrot=0) {
   union() {
     // Top
-    back((case_y / 2) - (wall_thickness / 2))
+    back((case_y / 2) - wall_thickness )
     latch(90);
 
     // Left
-    left((case_x / 2) - (wall_thickness / 2))
+    left((case_x / 2) - wall_thickness )
     fwd(case_x * .25)
     latch();
 
-    left((case_x / 2) - (wall_thickness / 2))
+    left((case_x / 2) - wall_thickness )
     fwd(-case_x * .25)
     latch();
 
     // Right
-    right((case_x / 2) - (wall_thickness / 2))
+    right((case_x / 2) - wall_thickness )
     fwd(case_x * .25)
     latch();
 
-    right((case_x / 2) - (wall_thickness / 2))
+    right((case_x / 2) - wall_thickness )
     fwd(- case_x * .25)
     latch();
   }
