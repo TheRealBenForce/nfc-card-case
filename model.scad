@@ -13,7 +13,7 @@ thickness = 5; // [5:10]
 padding = 5; // [5:10]
 
 // How much of the NFC card face will be covered from each edge.
-overhang = 2; // [2:6]
+overhang = 4; // [2:6]
 
 /* [Tolerances] */
 // Smoothness of curved surfaces in preview mode
@@ -27,13 +27,13 @@ $slop = 0.3;
 
 
 /* [Experimental] */
-rounding= 1.0; // [0.1:1.5]
+wall_thickness = 2; // [1:3]
+rounding= 1.5; // [0.1:1.5]
 latch_size = 1; // [0.1:0.5]
 
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
 plate_thickness = 1;
-wall_thickness = 3;
 inner_wall_height = thickness - (plate_thickness * 2);
 
 
