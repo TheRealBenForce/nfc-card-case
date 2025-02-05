@@ -133,6 +133,12 @@ module back_plate(is_open=true) {
   }
 }
 
+module back_panel_insert() {
+  color([0.8, 0, 0], 1)
+    cuboid([card_x, card_y, .25], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+
+}
+
 module latch(zrot=0, length=25) {
   zrot(zrot)
   yrot(45)
@@ -162,10 +168,14 @@ module together() {
     back_plate();
 }
 
-module side_by_side() {
+module side_by_side(include_card=false) {
   xdistribute(case_x + 2) {
       front_plate();
       back_plate();
+      back_panel_insert();
+      if (include_card) {
+        card();
+      }
   }
 }
 
