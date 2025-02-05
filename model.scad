@@ -81,8 +81,9 @@ module plate(is_open=true, face="front") {
 }
 
 module front_plate() {
-  color([1, 0.94, 0.84], .7)
+  color([1, 0.94, 0.84], 1)
   union() {
+    up(thickness / 2)
     latches();
     rect_tube(size=[case_x, case_y], wall=wall_thickness, rounding=rounding, h=case_z, anchor=BOTTOM);
     rect_tube(size=[case_x_window + wall_thickness, case_y_window + wall_thickness], isize=[case_x_window, case_y_window],wall=wall_thickness, rounding=rounding, h=case_z - card_z, anchor=BOTTOM);
@@ -98,6 +99,7 @@ module back_plate(is_open=true) {
       plate(is_open=is_open, face="back");
     }
     
+    up(thickness / 2)
     latches(include_bottom=true);
 
     up(case_z - plate_thickness - .2) // Make some space
@@ -106,7 +108,6 @@ module back_plate(is_open=true) {
 }
 
 module latch(zrot=0, length=25) {
-  up(thickness / 2)
   zrot(zrot)
   yrot(45)
   cube([latch_size, length, latch_size], center=true);
