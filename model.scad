@@ -23,7 +23,7 @@ preview_smoothness = 16; // [8:128]
 render_smoothness = 64; // [8:128]
 
 // The printer-specific slop value to make parts fit just right. Read more here: https://github.com/BelfrySCAD/BOSL2/wiki/constants.scad#constant-slop
-$slop = 0.3;
+$slop = 0.2;
 
 
 /* [Experimental] */
@@ -39,7 +39,7 @@ inner_wall_height = thickness - (plate_thickness * 2);
 
 case_x = card_x + (padding * 2);
 case_y = card_y + (padding * 2);
-case_z = (inner_wall_height + (plate_thickness * 2 ));
+case_z = thickness;
 
 case_x_window = card_x - (overhang * 2);
 case_y_window = card_y - (overhang * 2);
@@ -63,18 +63,22 @@ module magnet() {
     cylinder(1.75, 3, 3);
 }
 
-module plate(open=true) {
+module plate(is_open=true, face="front") {
   color([0.5, 0.5, 0.5])
+
   difference() {
-    cuboid([case_x , case_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-    if (open) {
+    if (face == "front") {
+      cuboid([case_x, case_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    } else {
+      cuboid([case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    }
+
+    if (is_open) {
     down(1)
       cuboid([card_x - (overhang * 2) , card_y - (overhang * 2), plate_thickness + 2], anchor=BOTTOM);
     }
   }
 }
-
-
 
 module front_plate() {
   color([1, 0.94, 0.84], .7)
@@ -86,49 +90,18 @@ module front_plate() {
   }
 }
 
-module back_plate() {
-  union() {
-    up(plate_thickness) {
-      card_support();
-      
-      // outer wall
-      difference() {
-        rect_tube(size=[case_x - wall_thickness - $slop, case_y - wall_thickness - $slop], wall=wall_thickness / 2, h=inner_wall_height, rounding=rounding);
-        latches();
-      }
+module back_plate(is_open=true) {
+  color([0.8, 0, 0], 1)
+  difference() {
+    union() {
+      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_x - 2, card_y - 2], wall=wall_thickness, rounding=rounding, h=case_z, anchor=BOTTOM);
+      plate(is_open=is_open, face="back");
     }
-    plate();
-  }
-}
+    
+    latches(include_bottom=true);
 
-module card_support() {
-  color([1, 0, 0])
-  union()  {
-    difference() {
-      rect_tube(size=[card_x + 3, card_y + 3], wall=wall_thickness / 2, rounding=rounding, h=inner_wall_height, anchor=BOTTOM);
-      down(1)
-      cube([100, card_y - 8, thickness * 2], anchor=BOTTOM);
-      down(1)
-      cube([card_x - 8, 100, thickness * 2], anchor=BOTTOM);
-    }
-      right((card_x / 2) + 1)
-      cube([wall_thickness / 2, 16, inner_wall_height], anchor=BOTTOM);
-
-      left((card_x / 2) + 1)
-      cube([wall_thickness / 2, 16, inner_wall_height], anchor=BOTTOM);
-
-      // Top
-      back((card_y / 2) + 1)
-      cube([8, wall_thickness / 2, inner_wall_height], anchor=BOTTOM);
-
-      // Bottom
-      left((card_x / 4))
-      fwd((card_y / 2) + 1)
-      cube([8, wall_thickness / 2, inner_wall_height], anchor=BOTTOM);
-
-      right((card_x / 4))
-      fwd((card_y / 2) + 1)
-      cube([8, .5, inner_wall_height], anchor=BOTTOM);
+    up(case_z - .2) // Make some space
+    cube([case_x, case_y, case_z], anchor=BOTTOM);
   }
 }
 
@@ -139,7 +112,7 @@ module latch(zrot=0, length=25) {
   cube([latch_size, length, latch_size], center=true);
 }
 
-module latches(zrot=0) {
+module latches(include_bottom=false) {
   union() {
     // Top
     back((case_y / 2) - wall_thickness )
@@ -153,14 +126,17 @@ module latches(zrot=0) {
     right((case_x / 2) - wall_thickness )
     latch(length=case_y_window);
 
+    if (include_bottom) {
+      // Bottom
+      fwd((case_y / 2) - wall_thickness )
+      latch(90);
+    }
   }
 }
 
-color([0.5, 0.5, 0.5]) {
-  xdistribute(case_x + 2) {
-      front_plate();
-      //back_plate();
-  }
+xdistribute(case_x + 2) {
+    front_plate();
+    back_plate();
 }
 
 
