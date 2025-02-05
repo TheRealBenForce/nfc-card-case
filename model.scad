@@ -134,9 +134,18 @@ module latches(include_bottom=false) {
   }
 }
 
-xdistribute(case_x + 2) {
+module together() {
     front_plate();
+    up(case_z)
+    xrot(180)
     back_plate();
 }
 
+module side_by_side() {
+  xdistribute(case_x + 2) {
+      front_plate();
+      back_plate();
+  }
+}
 
+side_by_side();
