@@ -36,6 +36,11 @@ $fn = $preview ? preview_smoothness : render_smoothness;
 plate_thickness = 1;
 inner_wall_height = thickness - (plate_thickness * 2);
 
+card_safe_zone_x = card_x + 2;
+card_safe_zone_y = card_y + 2;
+
+
+
 
 case_x = card_x + (padding * 2);
 case_y = card_y + (padding * 2);
@@ -46,6 +51,8 @@ case_y_window = card_y - (overhang * 2);
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
+echo (str("Card Safe Zone Width: ", card_safe_zone_x));
+echo (str("Card Safe Zone Height: ", card_safe_zone_y));
 echo (str("Total Width: ", case_x));
 echo (str("Total Height: ", case_y));
 echo (str("Total Thickness: ", case_z));
@@ -74,6 +81,9 @@ module plate(is_open=true, face="front") {
     }
 
     if (is_open) {
+    echo (str("Back Opening X: ", card_x - (overhang * 2)));
+    echo (str("Back Opening Y: ", card_y - (overhang * 2)));
+
     down(1)
       cuboid([card_x - (overhang * 2) , card_y - (overhang * 2), plate_thickness + 2], anchor=BOTTOM);
     }
@@ -95,7 +105,7 @@ module back_plate(is_open=true) {
   color([0.8, 0, 0], 1)
   difference() {
     union() {
-      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_x - 2, card_y - 2], wall=wall_thickness, rounding=rounding, h=case_z - plate_thickness, anchor=BOTTOM);
+      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_safe_zone_x, card_safe_zone_y], wall=wall_thickness, rounding=rounding, h=case_z - plate_thickness, anchor=BOTTOM);
       plate(is_open=is_open, face="back");
     }
     
