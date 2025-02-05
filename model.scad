@@ -7,7 +7,7 @@ card_y = 86; // [80:90]
 card_z = 2;  // [1.1:0.1:2.0]
 
 // Total thickness of the case
-thickness = 5; // [5:10]
+thickness = 5; // [4:10]
 
 // How much space will be between the card and the case on each edge.
 padding = 5; // [5:10]
@@ -30,10 +30,10 @@ $slop = 0.2;
 wall_thickness = 2; // [1:3]
 rounding= 1.5; // [0.1:1.5]
 latch_size = 1; // [0.1:0.5]
+plate_thickness = 1.0;  // [0.5:0.1:3.0]
 
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
-plate_thickness = 1;
 inner_wall_height = thickness - (plate_thickness * 2);
 
 card_safe_zone_x = card_x + 2;
