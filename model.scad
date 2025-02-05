@@ -13,7 +13,7 @@ thickness = 4; // [4:10]
 padding = 4; // [4:10]
 
 // How much of the NFC card face will be covered from each edge.
-overhang = 4; // [2:6]
+overhang = 2; // [2:6]
 
 /* [Tolerances] */
 // Smoothness of curved surfaces in preview mode
