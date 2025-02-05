@@ -39,7 +39,10 @@ inner_wall_height = thickness - (plate_thickness * 2);
 
 case_x = card_x + (padding * 2);
 case_y = card_y + (padding * 2);
-case_z = (plate_thickness * 2 + inner_wall_height);
+case_z = (inner_wall_height + (plate_thickness * 2 ));
+
+case_x_window = card_x - (overhang * 2);
+case_y_window = card_y - (overhang * 2);
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
@@ -47,6 +50,8 @@ echo (str("Total Width: ", case_x));
 echo (str("Total Height: ", case_y));
 echo (str("Total Thickness: ", case_z));
 
+echo (str("Window Opening Width: ", case_x_window));
+echo (str("Window Opening Height: ", case_y_window));
 
 module card() {
     color([0.5, 1, 0.5])
