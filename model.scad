@@ -132,11 +132,11 @@ module card_support() {
   }
 }
 
-module latch(zrot=0) {
+module latch(zrot=0, length=25) {
   up(thickness / 2)
   zrot(zrot)
   yrot(45)
-  cube([latch_size, 25, latch_size], center=true);
+  cube([latch_size, length, latch_size], center=true);
 }
 
 module latches(zrot=0) {
@@ -147,21 +147,12 @@ module latches(zrot=0) {
 
     // Left
     left((case_x / 2) - wall_thickness )
-    fwd(case_x * .25)
-    latch();
-
-    left((case_x / 2) - wall_thickness )
-    fwd(-case_x * .25)
-    latch();
+    latch(length=case_y_window);
 
     // Right
     right((case_x / 2) - wall_thickness )
-    fwd(case_x * .25)
-    latch();
+    latch(length=case_y_window);
 
-    right((case_x / 2) - wall_thickness )
-    fwd(- case_x * .25)
-    latch();
   }
 }
 
