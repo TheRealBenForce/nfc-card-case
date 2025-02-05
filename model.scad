@@ -36,8 +36,8 @@ plate_thickness = 0.5;  // [0.5:0.1:3.0]
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 
-card_safe_zone_x = card_x + 1;
-card_safe_zone_y = card_y + 1;
+card_safe_zone_x = card_x + .5;
+card_safe_zone_y = card_y + .5;
 
 
 
