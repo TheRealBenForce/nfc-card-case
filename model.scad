@@ -64,7 +64,7 @@ echo (str("Window Opening Height: ", case_y_window));
 
 module card() {
     color([0.5, 1, 0.5])
-    cube([card_x ,card_y,card_z], anchor=CENTER);
+    cube([card_x ,card_y,card_z], anchor=BOTTOM);
 }
 
 module magnet() {
