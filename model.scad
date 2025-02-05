@@ -94,13 +94,13 @@ module back_plate(is_open=true) {
   color([0.8, 0, 0], 1)
   difference() {
     union() {
-      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_x - 2, card_y - 2], wall=wall_thickness, rounding=rounding, h=case_z, anchor=BOTTOM);
+      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_x - 2, card_y - 2], wall=wall_thickness, rounding=rounding, h=case_z - plate_thickness, anchor=BOTTOM);
       plate(is_open=is_open, face="back");
     }
     
     latches(include_bottom=true);
 
-    up(case_z - .2) // Make some space
+    up(case_z - plate_thickness - .2) // Make some space
     cube([case_x, case_y, case_z], anchor=BOTTOM);
   }
 }
