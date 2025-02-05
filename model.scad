@@ -63,43 +63,28 @@ module magnet() {
     cylinder(1.75, 3, 3);
 }
 
-module plate() {
+module plate(open=true) {
   color([0.5, 0.5, 0.5])
   difference() {
     cuboid([case_x , case_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    if (open) {
     down(1)
-    cube([card_x - overhang , card_y - overhang, plate_thickness + 2], anchor=BOTTOM);
+      cuboid([card_x - (overhang * 2) , card_y - (overhang * 2), plate_thickness + 2], anchor=BOTTOM);
+    }
   }
 }
 
 
 
 module front_plate() {
-  
+  color([1, 0.94, 0.84], .7)
   union() {
     latches();
-    //color([0.5, 0.5, 0.5])
-    up(plate_thickness) {
-      difference() {
-
-        // walls
-        rect_tube(size=[case_x, case_y], wall=padding + (overhang / 2), h=inner_wall_height, rounding=rounding);
-        rect_tube(size=[case_x - wall_thickness, case_y - wall_thickness], wall=padding + (overhang / 2) - (wall_thickness), h=100);
-        
-        // Make space for the card to fit.
-        up(inner_wall_height + plate_thickness - card_z)
-        cube(size=[case_x - wall_thickness, case_y - wall_thickness, 10], anchor=BOTTOM);
-      
-        // removal space cutout
-        fwd(case_y / 2)
-        up(inner_wall_height / 2)
-        cube([4, wall_thickness + .1 , inner_wall_height / 2], anchor=BOTTOM);    
-      }
-    }
+    rect_tube(size=[case_x, case_y], wall=wall_thickness, rounding=rounding, h=case_z, anchor=BOTTOM);
+    rect_tube(size=[case_x_window + wall_thickness, case_y_window + wall_thickness], isize=[case_x_window, case_y_window],wall=wall_thickness, rounding=rounding, h=case_z - card_z, anchor=BOTTOM);
     plate();
   }
 }
-
 
 module back_plate() {
   union() {
