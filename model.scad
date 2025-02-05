@@ -4,7 +4,7 @@ include <BOSL2/transforms.scad>
 /* [Container Size] */
 card_x= 54; // [50:60]
 card_y = 86; // [80:90]
-card_z = 2;  // [1.1:0.1:2.0]
+card_z = 1.6;  // [1.1:0.1:2.0]
 
 // Total thickness of the case
 thickness = 4; // [4:10]
