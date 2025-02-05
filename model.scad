@@ -51,6 +51,8 @@ case_y_window = card_y - (overhang * 2);
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
+echo (str("Card Width: ", card_x));
+echo (str("Card Height: ", card_y));
 echo (str("Card Safe Zone Width: ", card_safe_zone_x));
 echo (str("Card Safe Zone Height: ", card_safe_zone_y));
 echo (str("Total Width: ", case_x));
