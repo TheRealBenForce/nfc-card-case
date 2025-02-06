@@ -31,6 +31,7 @@ wall_thickness = 2; // [1:3]
 rounding= 1.5; // [0.1:1.5]
 latch_size = .8; // [0.1:0.5]
 plate_thickness = 0.5;  // [0.5:0.1:3.0]
+opacity = 1; // [0.1:0.1:1.0]
 
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
@@ -93,7 +94,7 @@ module plate(is_open=true, face="front") {
 }
 
 module front_plate() {
-  color([1, 0.94, 0.84], 1)
+  color([1, 0.94, 0.84], opacity)
 
   difference() {
   union() {
@@ -112,7 +113,7 @@ module front_plate() {
 }
 
 module back_plate(is_open=true) {
-  color([0.8, 0, 0], 1)
+  color([0.8, 0, 0], opacity)
   difference() {
     union() {
       rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_safe_zone_x, card_safe_zone_y], wall=wall_thickness, rounding=rounding, h=case_z - plate_thickness, anchor=BOTTOM);
