@@ -1,6 +1,8 @@
 include <BOSL2/std.scad>
 include <BOSL2/transforms.scad>
 
+display = "3d_print"; // [side_by_side, together, front_plate, back_plate, 3d_print]
+
 /* [Container Size] */
 card_x= 54; // [50:60]
 card_y = 86; // [80:90]
@@ -169,15 +171,32 @@ module together() {
     back_plate();
 }
 
-module side_by_side(include_card=false) {
+module side_by_side(include_card=false, include_insert=false) {
   xdistribute(case_x + 2) {
+            if (include_card) {
+        card();
+}
       front_plate();
       back_plate();
-      back_panel_insert();
-      if (include_card) {
-        card();
+      if (include_insert) {
+        back_panel_insert();
       }
   }
 }
 
+
+module render() {
+  if (display == "side_by_side") {
 side_by_side();
+  } else if (display == "together") {
+    together();
+  } else if (display == "front_plate") {
+    front_plate();
+  } else if (display == "back_plate") {
+    back_plate();
+  } else if (display == "3d_print") {
+    side_by_side(include_insert=true);
+  }
+}
+
+render();
