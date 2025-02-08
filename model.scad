@@ -20,20 +20,10 @@ thickness = 4; // [4:10]
 // How much space will be between the card and the case on each edge. Less than 6 will make the walls too thin.
 frame_border = 6; // [5:10] 
 
-
-/* [Tolerances] */
-// Smoothness of curved surfaces in preview mode
-preview_smoothness = 16; // [8:128]
-
-// Smoothness of curved surfaces in render mode
-render_smoothness = 64; // [8:128]
-
-// If parts fit too tight, go up .1, if too loose, go down .1
+/* [Experimental] */
+// If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
 $slop = 0.3; // [0.0:0.1:0.5]
 
-
-/* [Experimental] */
-// How much of the NFC card face will be covered from each edge. 2 seems to be a good value.
 overhang = 2; // [2:10]
 
 // 2 seems to be a good value.
@@ -50,6 +40,12 @@ plate_thickness = 0.5;  // [0.5:0.1:3.0]
 
 
 /* [Debug] */
+// Smoothness of curved surfaces in preview mode
+preview_smoothness = 16; // [8:128]
+
+// Smoothness of curved surfaces in render mode
+render_smoothness = 64; // [8:128]
+
 opacity = 1; // [0.1:0.1:1.0]
 show_card = false; // [true, false]
 display = "3D Print"; // [Side by Side, Together, Front Plate, Back Plate, 3D Print]
