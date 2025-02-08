@@ -142,6 +142,10 @@ module back_plate() {
       cuboid([card_safe_zone_x + (wall_thickness * 2) - 2*$slop, card_safe_zone_y + (wall_thickness * 2) - 2*$slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       window();
     }
+
+    // Safe zone bummp. Holds the card in place. May not always be visible.
+    up(plate_thickness)
+    rect_tube(size=[card_safe_zone_x + wall_thickness, card_safe_zone_y + wall_thickness], h=.5, wall=wall_thickness * .5, rounding=rounding, anchor=BOTTOM);
   }
 }
 
