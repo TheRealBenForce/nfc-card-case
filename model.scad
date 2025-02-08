@@ -117,9 +117,9 @@ module front_plate() {
 
       }
       
-      //// Inner "pressure" edge
+      // Inner "pressure" edge. It's too thick so use half a standard wall.
       difference() {
-        cuboid([card_window_x + (wall_thickness * 2), card_window_y + (wall_thickness * 2), thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([card_window_x + (wall_thickness), card_window_y + (wall_thickness), thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
         cuboid([card_window_x, card_window_y, thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
