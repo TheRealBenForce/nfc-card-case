@@ -130,7 +130,7 @@ module back_plate() {
 
     // Outer wall. This surrounds the card
     difference() {
-      cuboid([card_safe_zone_x + (wall_thickness * 2) - 2*$slop, card_safe_zone_y + (wall_thickness * 2) - 2*$slop, thickness - plate_thickness - $slop], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([case_x - (wall_thickness * 2) - 2*$slop, case_y - (wall_thickness * 2) - 2*$slop, thickness - plate_thickness - $slop], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       cuboid([card_safe_zone_x, card_safe_zone_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
       up(thickness * (1/3))
