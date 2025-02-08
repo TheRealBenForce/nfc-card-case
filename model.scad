@@ -11,11 +11,10 @@ card_z = 1.6;  // [1.1:0.1:2.0]
 // Total thickness of the case
 thickness = 4; // [4:10]
 
-// How much space will be between the card and the case on each edge.
-padding = 4; // [4:10]
+// How much space will be between the card and the case on each edge. Less than 6 will make the walls too thin.
+frame_border = 6; // [5:10] 
 
-// How much of the NFC card face will be covered from each edge.
-overhang = 2; // [2:6]
+
 
 /* [Tolerances] */
 // Smoothness of curved surfaces in preview mode
@@ -29,6 +28,9 @@ $slop = 0.2;
 
 
 /* [Experimental] */
+// How much of the NFC card face will be covered from each edge.
+overhang = 2; // [2:10]
+
 wall_thickness = 2; // [1:3]
 rounding= 1.5; // [0.1:1.5]
 latch_size = .8; // [0.1:0.5]
@@ -39,18 +41,15 @@ opacity = 1; // [0.1:0.1:1.0]
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 
+
 card_safe_zone_x = card_x + .5;
 card_safe_zone_y = card_y + .5;
 
 
-
-
-case_x = card_x + (padding * 2);
-case_y = card_y + (padding * 2);
-case_z = thickness;
-
-case_x_window = card_x - (overhang * 2);
-case_y_window = card_y - (overhang * 2);
+card_window_x = card_x - (overhang * 2); // Supports the card from falling through the back
+card_window_y = card_y - (overhang * 2); // Supports the card from falling through the back
+case_x = card_window_x + (frame_border * 2);
+case_y = card_window_y + (frame_border * 2);
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
@@ -67,7 +66,7 @@ echo (str("Window Opening Height: ", case_y_window));
 
 module card() {
     color([0.5, 1, 0.5])
-    cube([card_x ,card_y,card_z], anchor=BOTTOM);
+    cuboid([card_x ,card_y,card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 }
 
 module magnet() {
@@ -75,64 +74,56 @@ module magnet() {
     cylinder(1.75, 3, 3);
 }
 
-module plate(is_open=true, face="front") {
-  color([0.5, 0.5, 0.5])
-
-  difference() {
-    if (face == "front") {
-      cuboid([case_x, case_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-    } else {
-      cuboid([case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-    }
-
-    if (is_open) {
-    echo (str("Back Opening X: ", card_x - (overhang * 2)));
-    echo (str("Back Opening Y: ", card_y - (overhang * 2)));
-
-    down(1)
-      cuboid([card_x - (overhang * 2) , card_y - (overhang * 2), plate_thickness + 2], anchor=BOTTOM);
-    }
-  }
+module window() {
+    cuboid([card_window_x, card_window_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 }
 
 module front_plate() {
   color([1, 0.94, 0.84], opacity)
+    union() {
+      
+      // Front Face
+      difference() {
+        cuboid([case_x, case_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        window();
+      }
 
-  difference() {
-  union() {
-    up(thickness * (3/5))
-    latches();
-    rect_tube(size=[case_x, case_y], wall=wall_thickness, rounding=rounding, h=case_z, anchor=BOTTOM);
-    rect_tube(size=[case_x_window + wall_thickness, case_y_window + wall_thickness], isize=[case_x_window, case_y_window],wall=wall_thickness, rounding=rounding, h=case_z - card_z, anchor=BOTTOM);
-    plate();
+      // Outer edge
+      difference() {
+        cuboid([case_x, case_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([case_x - (wall_thickness * 2), case_y - (wall_thickness * 2), thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+
+      }
+      
+      //// Inner "pressure" edge
+      difference() {
+        cuboid([card_window_x + (wall_thickness * 2), card_window_y + (wall_thickness * 2), thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([card_window_x, card_window_y, thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      }
+      
+      up(thickness * (3/5))
+      latches();
     }
-
-    // removal slot
-    fwd((case_y / 2) - wall_thickness )
-    up(thickness)
-    cuboid([padding * 3, wall_thickness * 2, plate_thickness * 3], anchor=TOP);
-  }
 }
 
-module back_plate(is_open=true) {
+module back_plate() {
   color([0.8, 0, 0], opacity)
-  difference() {
     union() {
-      rect_tube(size=[case_x - (wall_thickness * 2) - $slop, case_y - (wall_thickness * 2) - $slop], isize=[card_safe_zone_x, card_safe_zone_y], wall=wall_thickness, rounding=rounding, h=case_z - plate_thickness, anchor=BOTTOM);
-      plate(is_open=is_open, face="back");
+
+    // Outer wall. This surrounds the card
+    difference() {
+      cuboid([card_safe_zone_x + (wall_thickness * 2) - $slop, card_safe_zone_y + (wall_thickness * 2) - $slop, thickness - plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([card_safe_zone_x, card_safe_zone_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+
+      up(thickness * (2/5))
+      latches();
     }
-    
-    // latches
-    up(thickness * (2/5))
-    latches();
 
-    // removal slot
-    fwd((case_y / 2) - wall_thickness )
-    up(thickness / 3)
-    cuboid([padding * 3, wall_thickness * 2, 1], anchor=BOTTOM);
-
-    up(case_z - plate_thickness - .2) // Make some space to fit
-    cube([case_x, case_y, case_z], anchor=BOTTOM);
+    // Bottom face. Card sits on this
+    difference() {
+      cuboid([card_safe_zone_x + (wall_thickness * 2) - $slop, card_safe_zone_y + (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      window();
+    }
   }
 }
 
@@ -156,38 +147,38 @@ module latches() {
 
     // Left
     left((case_x / 2) - wall_thickness )
-    latch(length=case_y_window);
+    latch(length=card_window_y);
 
     // Right
     right((case_x / 2) - wall_thickness )
-    latch(length=case_y_window);
+    latch(length=card_window_y);
   }
 }
 
 module together() {
-    front_plate();
-    up(case_z)
-    xrot(180)
+   up(thickness)
+   xrot(180)
+   front_plate();
     back_plate();
 }
 
 module side_by_side(include_card=false, include_insert=false) {
   xdistribute(case_x + 2) {
-            if (include_card) {
+      if (include_card) {
         card();
-}
+      }
       front_plate();
       back_plate();
       if (include_insert) {
         back_panel_insert();
-      }
+      } 
   }
 }
 
 
 module render() {
   if (display == "side_by_side") {
-side_by_side();
+    side_by_side();
   } else if (display == "together") {
     together();
   } else if (display == "front_plate") {
