@@ -22,7 +22,7 @@ frame_border = 6; // [5:10]
 
 /* [Experimental] */
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
-$slop = 0.3; // [0.0:0.1:0.5]
+$slop = 0.2; // [0.0:0.1:0.5]
 
 overhang = 2; // [2:10]
 
@@ -130,7 +130,7 @@ module back_plate() {
 
     // Outer wall. This surrounds the card
     difference() {
-      cuboid([card_safe_zone_x + (wall_thickness * 2) - $slop, card_safe_zone_y + (wall_thickness * 2) - $slop, thickness - plate_thickness - $slop], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([card_safe_zone_x + (wall_thickness * 2) - 2*$slop, card_safe_zone_y + (wall_thickness * 2) - 2*$slop, thickness - plate_thickness - $slop], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       cuboid([card_safe_zone_x, card_safe_zone_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
       up(thickness * (1/3))
@@ -139,7 +139,7 @@ module back_plate() {
 
     // Bottom face. Card sits on this
     difference() {
-      cuboid([card_safe_zone_x + (wall_thickness * 2) - $slop, card_safe_zone_y + (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([card_safe_zone_x + (wall_thickness * 2) - 2*$slop, card_safe_zone_y + (wall_thickness * 2) - 2*$slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       window();
     }
   }
@@ -151,7 +151,7 @@ module back_panel_insert() {
 
 }
 
-module latch(zrot=0, length=25) {
+module latch(zrot=0, length=0) {
   zrot(zrot)
   yrot(45)
   cube([latch_size, length, latch_size], center=true);
@@ -161,11 +161,11 @@ module latches() {
   union() {
     // Top
     back((case_y / 2) - wall_thickness )
-    latch(90);
+    latch(zrot=90, length=card_window_x);
 
     // Bottom
     fwd((case_y / 2) - wall_thickness )
-    latch(90);
+    latch(zrot=90, length=card_window_x);
 
     // Left
     left((case_x / 2) - wall_thickness )
