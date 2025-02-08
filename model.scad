@@ -29,7 +29,7 @@ preview_smoothness = 16; // [8:128]
 render_smoothness = 64; // [8:128]
 
 // If parts fit too tight, go up .1, if too loose, go down .1
-$slop = 0.2;
+$slop = 0.3; // [0.0:0.1:0.5]
 
 
 /* [Experimental] */
