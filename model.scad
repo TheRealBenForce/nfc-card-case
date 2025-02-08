@@ -123,7 +123,7 @@ module front_plate() {
         cuboid([card_window_x, card_window_y, thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
-      up(thickness * (3/5))
+      up(thickness * (2/3))
       latches();
     }
 }
@@ -137,7 +137,7 @@ module back_plate() {
       cuboid([card_safe_zone_x + (wall_thickness * 2) - $slop, card_safe_zone_y + (wall_thickness * 2) - $slop, thickness - plate_thickness - $slop], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       cuboid([card_safe_zone_x, card_safe_zone_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
-      up(thickness * (2/5))
+      up(thickness * (1/3))
       latches();
     }
 
@@ -165,6 +165,10 @@ module latches() {
   union() {
     // Top
     back((case_y / 2) - wall_thickness )
+    latch(90);
+
+    // Bottom
+    fwd((case_y / 2) - wall_thickness )
     latch(90);
 
     // Left
