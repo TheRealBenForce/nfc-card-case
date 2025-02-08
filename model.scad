@@ -48,7 +48,7 @@ render_smoothness = 64; // [8:128]
 
 opacity = 1; // [0.1:0.1:1.0]
 show_card = false; // [true, false]
-display = "3D Print"; // [Side by Side, Together, Front Plate, Back Plate, 3D Print]
+display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Plate, Back Plate, 3D Print]
 
 
 /* [Hidden] */
@@ -57,8 +57,8 @@ inner_wall_height = thickness - (plate_thickness * 2);
 
 card_safe_zone_x = card_x + .5;
 card_safe_zone_y = card_y + .5;
-
 card_window_x = card_x - (overhang * 2); // Supports the card from falling through the back
+
 card_window_y = card_y - (overhang * 2); // Supports the card from falling through the back
 
 case_x = card_window_x + (frame_border * 2);
@@ -188,13 +188,21 @@ module together() {
     back_plate();
 }
 
-module side_by_side(include_card=false, include_insert=false) {
+module side_by_side(flip=false, include_card=false, include_insert=false) {
   xdistribute(case_x + 2) {
       if (include_card) {
         card();
       }
+
       front_plate();
+if (flip) {
+        up(thickness)
+        xrot(180)
+        back_plate();
+      } else {
       back_plate();
+}
+
       if (include_insert) {
         back_panel_insert();
       } 
@@ -205,6 +213,8 @@ module side_by_side(include_card=false, include_insert=false) {
 module render() {
   if (display == "Side by Side") {
     side_by_side();
+} else if (display == "Side by Side Flipped") {
+    side_by_side(flip=true);
   } else if (display == "Together") {
     together();
   } else if (display == "Front Plate") {
