@@ -17,12 +17,12 @@ card_z = 1.6;  // [1.1:0.1:2.0]
 // Total thickness of the case
 thickness = 4; // [4:10]
 
-// How much space will be between the card and the case on each edge. Less than 6 will make the walls too thin.
-frame_border = 6; // [5:10] 
+// How much space will be between the card and the case on each edge. Less than 7 will make the walls too thin.
+frame_border = 8; // [7:20] 
 
 /* [Experimental] */
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
-$slop = 0.2; // [0.0:0.1:0.5]
+$slop = 0.3; // [0.0:0.1:0.5]
 
 overhang = 2; // [2:10]
 
