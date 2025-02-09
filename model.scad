@@ -18,11 +18,11 @@ card_z = 1.6;  // [1.1:0.1:2.0]
 thickness = 4; // [4:10]
 
 // How much space will be between the card and the case on each edge. Less than 7 will make the walls too thin.
-frame_border = 8; // [7:20] 
+frame_border = 7; // [7:20] 
 
 /* [Experimental] */
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
-$slop = 0.3; // [0.0:0.1:0.5]
+$slop = 0.2; // [0.0:0.1:0.5]
 
 overhang = 2; // [2:10]
 
@@ -31,9 +31,6 @@ wall_thickness = 2; // [1:3]
 
 // Have not noticed any major issues at 1.5
 rounding= 1.5; // [0.0:0.5:5.0]
-
-// Good connections at .8
-latch_size = .8; // [0.1:0.5]
 
 // Haven't tried thinner than .5
 plate_thickness = 0.5;  // [0.5:0.1:3.0]
@@ -54,6 +51,9 @@ display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Pl
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
+
+// Good connections at .8
+latch_size = wall_thickness * .5;
 
 card_safe_zone_x = card_x + .5;
 card_safe_zone_y = card_y + .5;
@@ -127,7 +127,7 @@ module front_plate() {
         cuboid([card_window_x, card_window_y, thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
-      up(thickness * (2/3))
+      up(thickness * (1/3))
       latches();
     }
 }
@@ -142,8 +142,8 @@ module back_plate() {
       cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
-      up(thickness * (1/3))
-      latches();
+      up(thickness * (2/3))
+      latches(external=false);
     }
     // Safe zone bummp. Holds the card in place. May not always be visible.
     difference() {
@@ -172,23 +172,27 @@ module latch(zrot=0, length=0) {
   cube([latch_size, length, latch_size], center=true);
 }
 
-module latches() {
+module latches(external=true) {
+
+  latch_x = external ? card_window_x * .8 : card_window_x;
+  latch_y = external ? card_window_y * .8 : card_window_y;
+
   union() {
     // Top
     back((front_plate_outer_wall_y / 2) - wall_thickness )
-    latch(zrot=90, length=card_window_x);
+    latch(zrot=90, length=latch_x);
 
     // Bottom
     fwd((front_plate_outer_wall_y / 2) - wall_thickness )
-    latch(zrot=90, length=card_window_x);
+    latch(zrot=90, length=latch_x);
 
     // Left
     left((front_plate_outer_wall_x / 2) - wall_thickness )
-    latch(length=card_window_y);
+    latch(length=latch_y);
 
     // Right
     right((front_plate_outer_wall_x / 2) - wall_thickness )
-    latch(length=card_window_y);
+    latch(length=latch_y);
   }
 }
 
