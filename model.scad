@@ -30,7 +30,7 @@ overhang = 2; // [2:10]
 wall_thickness = 2; // [1:3]
 
 // Have not noticed any major issues at 1.5
-rounding= 1.5; // [0.1:1.5]
+rounding= 1.5; // [0.0:0.5:5.0]
 
 // Good connections at .8
 latch_size = .8; // [0.1:0.5]
