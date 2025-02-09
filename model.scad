@@ -22,7 +22,7 @@ frame_border = 7; // [7:20]
 
 /* [Experimental] */
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
-$slop = 0.2; // [0.0:0.1:0.5]
+$slop = 0.3; // [0.0:0.1:0.5]
 
 overhang = 2; // [2:10]
 
