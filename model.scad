@@ -127,7 +127,7 @@ module front_plate() {
         cuboid([card_window_x, card_window_y, thickness - card_z], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
-      up(thickness * (1/3))
+      up(thickness * .5)
       latches();
     }
 }
@@ -142,7 +142,7 @@ module back_plate() {
       cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
-      up(thickness * (2/3))
+      up(thickness * .5)
       latches(external=false);
     }
     // Safe zone bummp. Holds the card in place. May not always be visible.
