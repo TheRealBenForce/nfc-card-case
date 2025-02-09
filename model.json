@@ -1,0 +1,25 @@
+{
+    "fileFormatVersion": "1",
+    "parameterSets": {
+        "ASIN B0BXRW8S9B": {
+            "$slop": "0.2",
+            "card_x": "54",
+            "card_y": "86",
+            "card_z": "1.6",
+            "display": "3D Print",
+            "frame_border": "6",
+            "latch_size": "0.8",
+            "opacity": "0.3",
+            "overhang": "2",
+            "plate_thickness": "0.5",
+            "preview_smoothness": "16",
+            "render_smoothness": "64",
+            "rounding": "1",
+            "show_card": "false",
+            "thickness": "4",
+            "wall_thickness": "2"
+        }
+    },
+    "parameterSets": "",
+    "parameterSets": ""
+}
