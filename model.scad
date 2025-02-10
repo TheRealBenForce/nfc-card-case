@@ -15,10 +15,10 @@ object_height = 86; // [10:350]
 object_thickness = 1.6;  // [0.1:0.1:2.0]
 
 // Total thickness of the frame
-thickness = 4; // [4:256]
+thickness = 4; // [2:256]
 
-// How much space will be between the object and the frame on each edge. Less than 7 will make the walls too thin.
-frame_border = 7; // [7:20] 
+// How much space will be between the object and the frame on each edge. Less than 7 will make 2mm walls too thin.
+frame_border = 7; // [2:20] 
 
 /* [Max Printer Size] */
 printer_max_x = 256; // [100:500]
@@ -31,7 +31,10 @@ printer_max_z = 256; // [100:500]
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
 $slop = 0.3; // [0.0:0.1:0.5]
 
-overhang = 2; // [2:10]
+// This is the thickness of the optional back panel insert. It's a flat piece that can be inserted into the back of the frame.
+insert_thickness = .2; // [0.1:0.1:0.5]
+
+overhang = 2; // [1:10]
 
 // 2 seems to be a good value.
 wall_thickness = 2; // [1:10]
@@ -40,7 +43,7 @@ wall_thickness = 2; // [1:10]
 rounding= 1.5; // [0.0:0.5:5.0]
 
 // Haven't tried thinner than .5
-plate_thickness = 0.5;  // [0.5:0.1:3.0]
+plate_thickness = 0.5;  // [0.2:0.1:3.0]
 
 
 /* [Debug] */
