@@ -177,7 +177,7 @@ module back_plate() {
 
 module back_panel_insert() {
   color([0.8, 0, 0], 1)
-    cuboid([object_width, object_height, .25], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
 }
 
