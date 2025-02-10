@@ -62,8 +62,8 @@ display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Pl
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 
-// Good connections at .8
-latch_size = wall_thickness * .5;
+// based on thickness but has a max and min value.
+latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
 
 object_safe_zone_x = object_width + .5;
 object_safe_zone_y = object_height + .5;
