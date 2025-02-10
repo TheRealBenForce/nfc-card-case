@@ -61,6 +61,7 @@ display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Pl
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
+pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
 
 // based on thickness but has a max and min value.
 latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
@@ -80,10 +81,11 @@ back_plate_inner_wall_x = back_plate_outer_wall_x - (wall_thickness * 2);
 back_plate_inner_wall_y = back_plate_outer_wall_y - (wall_thickness * 2);
 
 
-
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
 echo (str("Total Thickness: ", thickness));
+echo(str("Latch Height: ", latch_size));
+echo(str("Pressure Depth: ", pressure_depth));
 
 echo (str("Object Width: ", object_width));
 echo (str("Object Height: ", object_height));
@@ -138,7 +140,7 @@ module front_plate() {
       
       // Inner "pressure" edge. It's too thick so use half a standard wall.
       difference() {
-        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
         cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
