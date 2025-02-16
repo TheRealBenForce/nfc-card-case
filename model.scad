@@ -20,6 +20,9 @@ thickness = 4; // [2:256]
 // How much space will be between the object and the frame on each edge. Less than 7 will make 2mm walls too thin.
 frame_border = 7; // [2:20] 
 
+// Extended frames offer more customization options, but are still being built.
+extended = false; // [true, false]
+
 /* [Max Printer Size] */
 printer_max_x = 256; // [100:500]
 
@@ -56,12 +59,13 @@ render_smoothness = 64; // [8:128]
 opacity = 1; // [0.1:0.1:1.0]
 show_object = false; // [true, false]
 display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Plate, Back Plate, 3D Print]
-
+rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
+extension_height = extended ? object_height * .2 : 0; // This is the additional height added.
 
 // based on thickness but has a max and min value.
 latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
@@ -110,7 +114,7 @@ assert(front_plate_outer_wall_y <= printer_max_y, "Total height is too large for
 
 module object() {
     color([0.5, 1, 0.5])
-    cuboid([object_width ,object_height,object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width ,object_height,object_thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
 }
 
 module magnet() {
@@ -119,7 +123,7 @@ module magnet() {
 }
 
 module window() {
-    cuboid([object_window_x, object_window_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_window_x, object_window_y, thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
 }
 
 module front_plate() {
@@ -128,20 +132,20 @@ module front_plate() {
       
       // Front Face
       difference() {
-        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, plate_thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
         window();
       }
 
       // Outer edge
       difference() {
-        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-        cuboid([front_plate_outer_wall_x - (wall_thickness * 2), front_plate_outer_wall_y - (wall_thickness * 2), thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x - (wall_thickness * 2), front_plate_outer_wall_y - (wall_thickness * 2), thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
       }
       
       // Inner "pressure" edge. It's too thick so use half a standard wall.
       difference() {
-        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-        cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
+        cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
       }
       
       up(thickness * .5)
@@ -156,8 +160,8 @@ module back_plate() {
 
     // Outer wall. This surrounds the object
     difference() {
-      cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-      cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
+      cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
 
       up(thickness * .5)
       latches(external=false);
@@ -171,7 +175,7 @@ module back_plate() {
 
     // Bottom face. Object sits on this
     difference() {
-      cuboid([front_plate_outer_wall_x - (wall_thickness * 2) - $slop, front_plate_outer_wall_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([front_plate_outer_wall_x - (wall_thickness * 2) - $slop, front_plate_outer_wall_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
       window();
     }
   }
@@ -179,7 +183,7 @@ module back_plate() {
 
 module back_panel_insert() {
   color([0.8, 0, 0], 1)
-    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=rounded_edges, anchor=BOTTOM);
 
 }
 
