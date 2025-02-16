@@ -15,10 +15,10 @@ object_height = 86; // [10:350]
 object_thickness = 1.6;  // [0.1:0.1:2.0]
 
 // Total thickness of the frame
-thickness = 4; // [4:256]
+thickness = 4; // [2:256]
 
-// How much space will be between the object and the frame on each edge. Less than 7 will make the walls too thin.
-frame_border = 7; // [7:20] 
+// How much space will be between the object and the frame on each edge. Less than 7 will make 2mm walls too thin.
+frame_border = 7; // [2:20] 
 
 /* [Max Printer Size] */
 printer_max_x = 256; // [100:500]
@@ -31,7 +31,10 @@ printer_max_z = 256; // [100:500]
 // If parts fit too tight, go up .1, if too loose, go down .1. Read up on BOSL2 $slop if needed.
 $slop = 0.3; // [0.0:0.1:0.5]
 
-overhang = 2; // [2:10]
+// This is the thickness of the optional back panel insert. It's a flat piece that can be inserted into the back of the frame.
+insert_thickness = .2; // [0.1:0.1:0.5]
+
+overhang = 2; // [1:10]
 
 // 2 seems to be a good value.
 wall_thickness = 2; // [1:10]
@@ -40,7 +43,7 @@ wall_thickness = 2; // [1:10]
 rounding= 1.5; // [0.0:0.5:5.0]
 
 // Haven't tried thinner than .5
-plate_thickness = 0.5;  // [0.5:0.1:3.0]
+plate_thickness = 0.5;  // [0.2:0.1:3.0]
 
 
 /* [Debug] */
@@ -58,9 +61,10 @@ display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Pl
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
+pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
 
-// Good connections at .8
-latch_size = wall_thickness * .5;
+// based on thickness but has a max and min value.
+latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
 
 object_safe_zone_x = object_width + .5;
 object_safe_zone_y = object_height + .5;
@@ -77,10 +81,11 @@ back_plate_inner_wall_x = back_plate_outer_wall_x - (wall_thickness * 2);
 back_plate_inner_wall_y = back_plate_outer_wall_y - (wall_thickness * 2);
 
 
-
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
 echo (str("Total Thickness: ", thickness));
+echo(str("Latch Height: ", latch_size));
+echo(str("Pressure Depth: ", pressure_depth));
 
 echo (str("Object Width: ", object_width));
 echo (str("Object Height: ", object_height));
@@ -135,7 +140,7 @@ module front_plate() {
       
       // Inner "pressure" edge. It's too thick so use half a standard wall.
       difference() {
-        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
         cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
       }
       
@@ -174,7 +179,7 @@ module back_plate() {
 
 module back_panel_insert() {
   color([0.8, 0, 0], 1)
-    cuboid([object_width, object_height, .25], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
 
 }
 
