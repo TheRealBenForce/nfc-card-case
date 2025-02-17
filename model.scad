@@ -65,7 +65,9 @@ rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
+
 extension_height = extended ? object_height * .2 : 0; // This is the additional height added.
+back_distance = extended ? extension_height / 2: 0; // How far back to move the window from center to keep the desired frame boarder size
 
 // based on thickness but has a max and min value.
 latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
@@ -77,7 +79,7 @@ object_window_x = object_width - (overhang * 2); // Supports the object from fal
 object_window_y = object_height - (overhang * 2); // Supports the object from falling through the back
 
 front_plate_outer_wall_x = object_window_x + (frame_border * 2);
-front_plate_outer_wall_y = object_window_y + (frame_border * 2);
+front_plate_outer_wall_y = object_window_y + (frame_border * 2) + extension_height;
 
 back_plate_outer_wall_x = front_plate_outer_wall_x - (wall_thickness * 2) - $slop;
 back_plate_outer_wall_y = front_plate_outer_wall_y - (wall_thickness * 2) - $slop;
@@ -123,7 +125,7 @@ module magnet() {
 }
 
 module window() {
-    cuboid([object_window_x, object_window_y, thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+      cuboid([object_window_x, object_window_y, thickness * 2], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 }
 
 module front_plate() {
@@ -133,6 +135,7 @@ module front_plate() {
       // Front Face
       difference() {
         cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, plate_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+        back(back_distance)
         window();
       }
 
@@ -143,11 +146,12 @@ module front_plate() {
       }
       
       // Inner "pressure" edge. It's too thick so use half a standard wall.
+      back(back_distance)
       difference() {
         cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=["Z"], anchor=BOTTOM);
         cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
       }
-      
+
       up(thickness * .5)
       latches();
     }
@@ -166,7 +170,9 @@ module back_plate() {
       up(thickness * .5)
       latches(external=false);
     }
+    
     // Safe zone bummp. Holds the object in place. May not always be visible.
+    back(back_distance)
     difference() {
         rect_tube(size=[object_safe_zone_x + wall_thickness, object_safe_zone_y + wall_thickness], isize=[object_safe_zone_x, object_safe_zone_y], h=back_height, rounding=rounding, anchor=BOTTOM);
         cube([object_safe_zone_x + wall_thickness, object_safe_zone_y * .8, back_height], anchor=BOTTOM);
@@ -176,6 +182,7 @@ module back_plate() {
     // Bottom face. Object sits on this
     difference() {
       cuboid([front_plate_outer_wall_x - (wall_thickness * 2) - $slop, front_plate_outer_wall_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+      back(back_distance)
       window();
     }
   }
