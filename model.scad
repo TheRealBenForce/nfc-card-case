@@ -65,8 +65,8 @@ rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 $fn = $preview ? preview_smoothness : render_smoothness;
 inner_wall_height = thickness - (plate_thickness * 2);
 pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
-
-extension_height = extended ? object_height * .2 : 0; // This is the additional height added.
+extension_multiplier = .2;
+extension_height = extended ? object_height * extension_multiplier : 0; // This is the additional height added.
 back_distance = extended ? extension_height / 2: 0; // How far back to move the window from center to keep the desired frame boarder size
 
 // based on thickness but has a max and min value.
@@ -85,7 +85,9 @@ back_plate_outer_wall_x = front_plate_outer_wall_x - (wall_thickness * 2) - $slo
 back_plate_outer_wall_y = front_plate_outer_wall_y - (wall_thickness * 2) - $slop;
 back_plate_inner_wall_x = back_plate_outer_wall_x - (wall_thickness * 2);
 back_plate_inner_wall_y = back_plate_outer_wall_y - (wall_thickness * 2);
+back_height = thickness - plate_thickness - $slop;
 
+extension_center_y = (front_plate_outer_wall_y / 2) - (extension_height / 2) - (wall_thickness * 2); // This is the center of the extension space... I think. It's used to place the magnets in the center of the extension space.
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
@@ -116,12 +118,29 @@ assert(front_plate_outer_wall_y <= printer_max_y, "Total height is too large for
 
 module object() {
     color([0.5, 1, 0.5])
-    cuboid([object_width ,object_height,object_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+    cuboid([object_width, object_height,object_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 }
 
-module magnet() {
+module magnet_space(support=false) {
     color([0.8, 0.8, 0.8])
-    cylinder(1.75, 3, 3);
+    difference() {
+      //mag_radius = 3;
+      mag_radius = 5;
+      mag_height = 1.75;
+      cylinder(back_height, mag_radius * 1.3, mag_radius * 1.3, anchor=BOTTOM);
+      up(back_height - mag_height - $slop)
+      cylinder(mag_height + $slop, mag_diam + $slop, mag_radius + $slop, anchor=BOTTOM);
+    }
+}
+
+module extension_space() {
+  if (extended) {
+    xdistribute((back_plate_outer_wall_x / 3)) {
+      magnet_space();
+      cuboid([wall_thickness, extension_height, back_height], anchor=BOTTOM);
+      magnet_space();
+    }
+  }
 }
 
 module window() {
@@ -158,7 +177,6 @@ module front_plate() {
 }
 
 module back_plate() {
-  back_height = thickness - plate_thickness - $slop;
   color([0.8, 0, 0], opacity)
     union() {
 
@@ -170,7 +188,7 @@ module back_plate() {
       up(thickness * .5)
       latches(external=false);
     }
-    
+
     // Safe zone bummp. Holds the object in place. May not always be visible.
     back(back_distance)
     difference() {
@@ -185,6 +203,10 @@ module back_plate() {
       back(back_distance)
       window();
     }
+
+    // Everything that goes inside or on top of the extesion space goes here
+    fwd(extension_center_y)
+    extension_space();
   }
 }
 
