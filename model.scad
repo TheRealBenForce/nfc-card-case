@@ -135,8 +135,7 @@ module magnet_space(support=false) {
       cylinder(back_height, magnet_radius * 1.3, magnet_radius * 1.3, anchor=BOTTOM);
       
       // Slightly larger than the magnet size.
-      // Also recesed from the back face a bit to consider
-      // magnet height.
+      // Also recesed from the back face a bit to consider magnet height.
       up(back_height - magnet_height - $slop)
       cylinder(magnet_height + $slop, magnet_radius + $slop, magnet_radius + $slop, anchor=BOTTOM);
     }
