@@ -20,6 +20,9 @@ thickness = 4; // [2:256]
 // How much space will be between the object and the frame on each edge. Less than 7 will make 2mm walls too thin.
 frame_border = 7; // [2:20] 
 
+// Extended frames offer more customization options, but are still being built.
+extension_height = 20; // [0:40]
+
 /* [Max Printer Size] */
 printer_max_x = 256; // [100:500]
 
@@ -42,6 +45,12 @@ wall_thickness = 2; // [1:10]
 // Have not noticed any major issues at 1.5
 rounding= 1.5; // [0.0:0.5:5.0]
 
+// Some designes allow for magnets to be inserted into the frame. This is the height.
+magnet_height = 1.75; // [1:0.1:10]
+
+// Some designes allow for magnets to be inserted into the frame. This is the radius.
+magnet_radius = 5.0; // [2.0:0.1:10]
+
 // Haven't tried thinner than .5
 plate_thickness = 0.5;  // [0.2:0.1:3.0]
 
@@ -57,11 +66,14 @@ opacity = 1; // [0.1:0.1:1.0]
 show_object = false; // [true, false]
 display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Plate, Back Plate, 3D Print]
 
-
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
+
+extended = extension_height > 0;
+rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 inner_wall_height = thickness - (plate_thickness * 2);
 pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
+back_distance = extended ? extension_height / 2: 0; // How far back to move the window from center to keep the desired frame boarder size
 
 // based on thickness but has a max and min value.
 latch_size = max(thickness * 0.2, min(thickness * 0.25, 0.8));
@@ -73,13 +85,15 @@ object_window_x = object_width - (overhang * 2); // Supports the object from fal
 object_window_y = object_height - (overhang * 2); // Supports the object from falling through the back
 
 front_plate_outer_wall_x = object_window_x + (frame_border * 2);
-front_plate_outer_wall_y = object_window_y + (frame_border * 2);
+front_plate_outer_wall_y = object_window_y + (frame_border * 2) + extension_height;
 
 back_plate_outer_wall_x = front_plate_outer_wall_x - (wall_thickness * 2) - $slop;
 back_plate_outer_wall_y = front_plate_outer_wall_y - (wall_thickness * 2) - $slop;
 back_plate_inner_wall_x = back_plate_outer_wall_x - (wall_thickness * 2);
 back_plate_inner_wall_y = back_plate_outer_wall_y - (wall_thickness * 2);
+back_height = thickness - plate_thickness - $slop;
 
+extension_center_y = (front_plate_outer_wall_y / 2) - (extension_height / 2) - (wall_thickness * 2); // This is the center of the extension space... I think. It's used to place the magnets in the center of the extension space.
 
 echo (str(""));
 echo (str("XXXXXXXXX INITIAL VARIABLES XXXXXXXXXXXXX"));
@@ -110,16 +124,37 @@ assert(front_plate_outer_wall_y <= printer_max_y, "Total height is too large for
 
 module object() {
     color([0.5, 1, 0.5])
-    cuboid([object_width ,object_height,object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width, object_height,object_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 }
 
-module magnet() {
+module magnet_space(support=false) {
     color([0.8, 0.8, 0.8])
-    cylinder(1.75, 3, 3);
+    difference() {
+
+      // Outer wall of the magnet holder
+      cylinder(back_height, magnet_radius * 1.3, magnet_radius * 1.3, anchor=BOTTOM);
+      
+      // Slightly larger than the magnet size.
+      // Also recesed from the back face a bit to consider magnet height.
+      up(back_height - magnet_height - $slop)
+      cylinder(magnet_height + $slop, magnet_radius + $slop, magnet_radius + $slop, anchor=BOTTOM);
+    }
+}
+
+module extension_space() {
+  if (extended) {
+
+    // Spread magnet holders evenly across the extension space.
+    xdistribute((back_plate_outer_wall_x / 3)) {
+      magnet_space();
+      cuboid([wall_thickness, extension_height, back_height], anchor=BOTTOM);
+      magnet_space();
+    }
+  }
 }
 
 module window() {
-    cuboid([object_window_x, object_window_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([object_window_x, object_window_y, thickness * 2], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 }
 
 module front_plate() {
@@ -128,41 +163,44 @@ module front_plate() {
       
       // Front Face
       difference() {
-        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, plate_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+        back(back_distance)
         window();
       }
 
       // Outer edge
       difference() {
-        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-        cuboid([front_plate_outer_wall_x - (wall_thickness * 2), front_plate_outer_wall_y - (wall_thickness * 2), thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x, front_plate_outer_wall_y, thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+        cuboid([front_plate_outer_wall_x - (wall_thickness * 2), front_plate_outer_wall_y - (wall_thickness * 2), thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
       }
       
       // Inner "pressure" edge. It's too thick so use half a standard wall.
+      back(back_distance)
       difference() {
-        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-        cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+        cuboid([object_window_x + (wall_thickness), object_window_y + (wall_thickness), pressure_depth], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+        cuboid([object_window_x, object_window_y, thickness - object_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
       }
-      
+
       up(thickness * .5)
       latches();
     }
 }
 
 module back_plate() {
-  back_height = thickness - plate_thickness - $slop;
   color([0.8, 0, 0], opacity)
     union() {
 
     // Outer wall. This surrounds the object
     difference() {
-      cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
-      cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([back_plate_outer_wall_x, back_plate_outer_wall_y, back_height], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+      cuboid([back_plate_inner_wall_x, back_plate_inner_wall_y, back_height], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 
       up(thickness * .5)
       latches(external=false);
     }
+
     // Safe zone bummp. Holds the object in place. May not always be visible.
+    back(back_distance)
     difference() {
         rect_tube(size=[object_safe_zone_x + wall_thickness, object_safe_zone_y + wall_thickness], isize=[object_safe_zone_x, object_safe_zone_y], h=back_height, rounding=rounding, anchor=BOTTOM);
         cube([object_safe_zone_x + wall_thickness, object_safe_zone_y * .8, back_height], anchor=BOTTOM);
@@ -171,15 +209,20 @@ module back_plate() {
 
     // Bottom face. Object sits on this
     difference() {
-      cuboid([front_plate_outer_wall_x - (wall_thickness * 2) - $slop, front_plate_outer_wall_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+      cuboid([front_plate_outer_wall_x - (wall_thickness * 2) - $slop, front_plate_outer_wall_y - (wall_thickness * 2) - $slop, plate_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
+      back(back_distance)
       window();
     }
+
+    // Everything that goes inside or on top of the extesion space goes here
+    fwd(extension_center_y)
+    extension_space();
   }
 }
 
 module back_panel_insert() {
   color([0.8, 0, 0], 1)
-    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=[FRONT+LEFT,FRONT+RIGHT,BACK+RIGHT,BACK+LEFT], anchor=BOTTOM);
+    cuboid([object_width, object_height, insert_thickness], rounding=rounding, edges=["Z"], anchor=BOTTOM);
 
 }
 
