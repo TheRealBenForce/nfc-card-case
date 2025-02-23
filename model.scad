@@ -21,7 +21,7 @@ thickness = 4; // [2:256]
 frame_border = 7; // [2:20] 
 
 // Extended frames offer more customization options, but are still being built.
-extended = false; // [true, false]
+extension_height = 20; // [0:40]
 
 /* [Max Printer Size] */
 printer_max_x = 256; // [100:500]
@@ -65,14 +65,14 @@ render_smoothness = 64; // [8:128]
 opacity = 1; // [0.1:0.1:1.0]
 show_object = false; // [true, false]
 display = "3D Print"; // [Side by Side, Side by Side Flipped, Together, Front Plate, Back Plate, 3D Print]
-rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 
 /* [Hidden] */
 $fn = $preview ? preview_smoothness : render_smoothness;
+
+extended = extension_height > 0;
+rounded_edges = extended ? [BACK+RIGHT,BACK+LEFT] : "Z"; // BOSL2 edge rounding
 inner_wall_height = thickness - (plate_thickness * 2);
 pressure_depth = thickness - object_thickness - insert_thickness; // This is on the front face inside of the frame pushing down on the object
-extension_multiplier = .2;
-extension_height = extended ? object_height * extension_multiplier : 0; // This is the additional height added.
 back_distance = extended ? extension_height / 2: 0; // How far back to move the window from center to keep the desired frame boarder size
 
 // based on thickness but has a max and min value.
