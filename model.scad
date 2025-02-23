@@ -45,8 +45,11 @@ wall_thickness = 2; // [1:10]
 // Have not noticed any major issues at 1.5
 rounding= 1.5; // [0.0:0.5:5.0]
 
-// Some designes allow for magnets to be inserted into the frame. This is the size radius x depth.
-magnet_size = [5, 1.75]; // [1:0.1:10]
+// Some designes allow for magnets to be inserted into the frame. This is the height.
+magnet_height = 1.75; // [1:0.1:10]
+
+// Some designes allow for magnets to be inserted into the frame. This is the radius.
+magnet_radius = 5.0; // [2.0:0.1:10]
 
 // Haven't tried thinner than .5
 plate_thickness = 0.5;  // [0.2:0.1:3.0]
@@ -127,11 +130,15 @@ module object() {
 module magnet_space(support=false) {
     color([0.8, 0.8, 0.8])
     difference() {
-            mag_radius = magnet_size[0];
-      mag_height = magnet_size[1];
-      cylinder(back_height, mag_radius * 1.3, mag_radius * 1.3, anchor=BOTTOM);
-      up(back_height - mag_height - $slop)
-      cylinder(mag_height + $slop, mag_diam + $slop, mag_radius + $slop, anchor=BOTTOM);
+
+      // Outer wall of the magnet holder
+      cylinder(back_height, magnet_radius * 1.3, magnet_radius * 1.3, anchor=BOTTOM);
+      
+      // Slightly larger than the magnet size.
+      // Also recesed from the back face a bit to consider
+      // magnet height.
+      up(back_height - magnet_height - $slop)
+      cylinder(magnet_height + $slop, magnet_radius + $slop, magnet_radius + $slop, anchor=BOTTOM);
     }
 }
 
