@@ -143,6 +143,8 @@ module magnet_space(support=false) {
 
 module extension_space() {
   if (extended) {
+
+    // Spread magnet holders evenly across the extension space.
     xdistribute((back_plate_outer_wall_x / 3)) {
       magnet_space();
       cuboid([wall_thickness, extension_height, back_height], anchor=BOTTOM);
